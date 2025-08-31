@@ -118,6 +118,7 @@ bot.onText(/^\/ScheludOk7$/, async(ctx) => {
     await bot.sendMessage(ctx.from.id, `<b>${u.day.day} ${u.day.weak}</b>\n\n${message}`, {reply_to_message_id: ctx.message_id, parse_mode: 'HTML'})
   }
 })
+console.log('first runn!!')
 
 
 
