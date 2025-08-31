@@ -12,9 +12,6 @@
           "dest": "bot.js"
         }
       ],
-      "engines": {
-        "node": "24.6.0"
-      },
         "env": {
         "token": "@telegram_bot_token"
       }
