@@ -13,6 +13,6 @@
         }
       ],
         "env": {
-        "token": "@telegram_bot_token"
+        "token": "@token"
       }
     }
