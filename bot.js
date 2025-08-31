@@ -104,6 +104,7 @@ const token = process.env.token
 const bot = new TelegramBot(token, {polling: true})
 
 bot.onText(/^\/ScheludOk7$/, async(ctx) => {
+  console.log(111)
   let rasp = await main()
   console.log(JSON.stringify(rasp, null, 2))
   for(let u of rasp){
