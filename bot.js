@@ -97,8 +97,11 @@ async function main() {
     return arrFin
 } 
 main()
+import { config } from 'dotenv';
+config();
 
-const bot = new TelegramBot('8223600211:AAHONJ8ARkH380tvzocn1Gj3MHhiR_SYngs', {polling: true})
+const token = process.env.token
+const bot = new TelegramBot(token, {polling: true})
 
 bot.onText(/^\/ScheludOk7$/, async(ctx) => {
   let rasp = await main()
