@@ -166,7 +166,7 @@ app.post(`/telegram-bot`, (req, res) => {
     res.sendStatus(200);
 });
 
-bot.setWebhook(`${url}/telegram-bot`)
+bot.setWebHook(`${url}/telegram-bot`)
   .then(() => console.log('Webhook установлен!'))
   .catch(err => console.error('Ошибка при установке Webhook:', err));
 
@@ -193,8 +193,8 @@ app.get('/', (req, res) => {
   res.send('Telegram Bot is running with Webhooks!');
 });
 
-app.listen(port, () => {
-  console.log(`Telegram Bot is running with Webhooks on port ${port}`);
+app.listen(2222, () => {
+  console.log(`Telegram Bot is running with Webhooks on port ${2222}`);
 });
 console.log('first runn!!')
 
