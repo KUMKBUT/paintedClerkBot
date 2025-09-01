@@ -1,34 +1,84 @@
 import fetch from 'node-fetch';
-import encoding from 'encoding';
+import * as encoding from 'encoding';
+import { HttpProxyAgent } from 'http-proxy-agent';
 import * as cheerio from 'cheerio';
 import TelegramBot from 'node-telegram-bot-api';
 
 let html
 
-async function fetchHtml(url) {
-  try {
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer(); 
-    const contentType = response.headers.get('content-type');
-    let encodingType = 'utf-8';
+async function getHtmlWithProxy(url, proxyUrl = null) {
+    try {
+        console.log("Начало getHtmlWithProxy");
+        console.log("URL:", url);
+        console.log("Proxy URL:", proxyUrl);
 
-    if (contentType && contentType.includes('charset=')) {
-      encodingType = contentType.split('charset=')[1].trim();
+        const options = {};
+
+        if (proxyUrl) {
+            console.log("Используется прокси");
+            const proxyAgent = new HttpProxyAgent(proxyUrl);
+            options.agent = proxyAgent;
+            console.log("ProxyAgent создан:", proxyAgent);
+            console.log("Options после добавления агента:", options);
+        } else {
+            console.log("Прокси не используется");
+        }
+
+        console.log("Перед fetch");
+        const response = await fetch(url, options);
+        console.log("После fetch");
+
+        if (!response.ok) {
+            console.error("Ошибка HTTP:", response.status);
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        console.log("Получение buffer");
+        const buffer = await response.arrayBuffer();
+        console.log("Buffer получен, длина:", buffer.byteLength);
+
+        const contentType = response.headers.get('content-type');
+        console.log("Content-Type:", contentType);
+        let encodingType = 'utf-8';
+
+        if (contentType && contentType.includes('charset=')) {
+            encodingType = contentType.split('charset=')[1].trim().replace(/['";]/g, '');
+            console.log("Encoding Type из Content-Type:", encodingType);
+        } else {
+            console.log("Encoding Type не найден в Content-Type, используется UTF-8 по умолчанию.");
+        }
+
+        let decodedHtml;
+        try {
+            console.log("Попытка конвертации кодировки из", encodingType, "в UTF-8");
+            // Используем encoding.convert
+            decodedHtml = encoding.convert(Buffer.from(buffer), 'UTF8', encodingType).toString('UTF8');
+            console.log("Конвертация успешна.");
+        } catch (conversionError) {
+            console.warn(`Ошибка конвертации из ${encodingType} в UTF-8. Используется TextDecoder с UTF-8 по умолчанию:`, conversionError);
+            decodedHtml = new TextDecoder('utf-8').decode(buffer);
+            console.log("Использован TextDecoder с UTF-8.");
+        }
+
+        console.log("Текст получен, длина:", decodedHtml.length);
+        return decodedHtml;
+
+    } catch (error) {
+        console.error("Ошибка в getHtmlWithProxy:", error);
+        return null;
+    } finally {
+        console.log("Завершение getHtmlWithProxy");
     }
-
-    const decodedHtml = encoding.convert(Buffer.from(buffer), 'UTF8', encodingType).toString('UTF8'); //конвертируем buffer
-    return decodedHtml;
-  } catch (error) {
-    console.error("Error fetching HTML:", error);
-    return null;
-  }
 }
+
 
 async function main() {
   const url = 'https://coworking.tyuiu.ru/shs/all_t/sh.php?action=group&union=0&sid=28713&gr=855&year=2025&vr=1';
-    html = await fetchHtml(url);
+  const proxy ='http://87.239.31.42:80'
+    html = await getHtmlWithProxy(url, proxy);
 
     const $ = cheerio.load(html)
+    const nameGroup = $('div.head:eq(1) b').text();
     const firstRow = $('table#main_table tbody tr').first();
     let rowText = "";
     let arr = []
@@ -94,6 +144,7 @@ async function main() {
     }
     
     // console.log(JSON.stringify(arrFin, null, 2));
+    arrFin.push({group: nameGroup})
     return arrFin
 } 
 main()
@@ -106,10 +157,12 @@ const bot = new TelegramBot(token, {polling: true})
 bot.onText(/^\/ScheludOk7$/, async(ctx) => {
   console.log(111)
   let rasp = await main()
-  console.log(JSON.stringify(rasp, null, 2))
-  for(let u of rasp){
+  let lesson = rasp.filter((name) => name.day )
+
+  for(let u of lesson){
     let message = ''
     for(let i of u.lesson){
+      if(u.group){ return }
       if(i.attr === 'empty'){
         message += `${i.time} | Нет занятий\n\n`
       } else {
