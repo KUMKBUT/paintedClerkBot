@@ -6,12 +6,6 @@ import TelegramBot from 'node-telegram-bot-api';
 
 let html
 
-import express from 'express'
-const app = express()
-app.listen(7181, (error) => {
-    error ? console.log('error') : console.log('server listener port 4441')
-})
-
 async function getHtmlWithProxy(url, proxyUrl = null) {
     try {
         console.log("Начало getHtmlWithProxy");
