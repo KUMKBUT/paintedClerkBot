@@ -155,6 +155,7 @@ config();
 
 const token = process.env.token
 const url = process.env.weburl
+const port = process.env.PORT || 3000;
 const bot = new TelegramBot(token)
 
 const app = express();
@@ -193,8 +194,8 @@ app.get('/', (req, res) => {
   res.send('Telegram Bot is running with Webhooks!');
 });
 
-app.listen(2222, () => {
-  console.log(`Telegram Bot is running with Webhooks on port ${2222}`);
+app.listen(port, () => {
+  console.log(`Telegram Bot is running with Webhooks on port ${port}`);
 });
 console.log('first runn!!')
 
