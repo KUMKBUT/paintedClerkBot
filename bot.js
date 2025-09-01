@@ -3,6 +3,7 @@ import * as encoding from 'encoding';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import * as cheerio from 'cheerio';
 import TelegramBot from 'node-telegram-bot-api';
+import bodyParser from 'body-parser'
 
 let html
 
@@ -152,7 +153,21 @@ import { config } from 'dotenv';
 config();
 
 const token = process.env.token
+const url = process.env.weburl
 const bot = new TelegramBot(token, {polling: true})
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.post(`/telegram-bot`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+});
+
+bot.setWebhook(`${url}/telegram-bot`)
+  .then(() => console.log('Webhook установлен!'))
+  .catch(err => console.error('Ошибка при установке Webhook:', err));
 
 bot.onText(/^\/ScheludOk7$/, async(ctx) => {
   console.log(111)
@@ -172,6 +187,14 @@ bot.onText(/^\/ScheludOk7$/, async(ctx) => {
     await bot.sendMessage(ctx.from.id, `<b>${u.day.day} ${u.day.weak}</b>\n\n${message}`, {reply_to_message_id: ctx.message_id, parse_mode: 'HTML'})
   }
 })
+
+app.get('/', (req, res) => {
+  res.send('Telegram Bot is running with Webhooks!');
+});
+
+app.listen(port, () => {
+  console.log(`Telegram Bot is running with Webhooks on port ${port}`);
+});
 console.log('first runn!!')
 
 
