@@ -154,7 +154,7 @@ config();
 
 const token = process.env.token
 const url = process.env.weburl
-const bot = new TelegramBot(token, {polling: true})
+const bot = new TelegramBot(token)
 
 const app = express();
 
