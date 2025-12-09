@@ -75,7 +75,7 @@ async function getHtmlWithProxy(url, proxyUrl = null) {
 
 
 async function main() {
-  const url = 'https://coworking.tyuiu.ru/shs/all_t/sh.php?action=group&union=0&sid=28713&gr=855&year=2025&vr=1';
+  const url = 'тум тум сахур';
   const proxy ='http://87.239.31.42:80'
     html = await getHtmlWithProxy(url, proxy);
 
