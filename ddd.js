@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
        async function checkProxy(proxyUrl) {
            try {
                const proxyAgent = new HttpProxyAgent(proxyUrl);
-               const response = await fetch('https://coworking.tyuiu.ru/shs/all_t/sh.php?action=group&union=0&sid=28713&gr=855&year=2025&vr=1', { // Любой надежный сайт
+               const response = await fetch('любой сайт', { // Любой надежный сайт
                    agent: proxyAgent,
                    timeout: 5000
                });
